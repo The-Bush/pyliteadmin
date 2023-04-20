@@ -1,0 +1,3 @@
+[console_scripts]
+textual=textual.cli.cli:run
+
