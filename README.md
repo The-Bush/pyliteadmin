@@ -3,7 +3,7 @@
 PyLiteAdmin is a Python app for viewing and editing sqlite databases with an appealing and useful interface. All inside of the terminal thanks to the [Textual](https://pypi.org/project/textual/) framework.
 
 ## Features
-- [x] Use a TUIto view your sqlite database
+- [x] Use a TUI (Terminal User Interface) to view your sqlite database
 - [ ] Search Columns (TODO)
 - [ ] Add/Delete Rows (TODO)
 - [ ] Edit Cell values (TODO)
