@@ -1,0 +1,28 @@
+Screen {
+    layout: grid;
+    grid-size:10;
+}
+TableSelector{
+    min-height: 0vh;
+    max-height: 100vh;
+    max-width: 10vw;
+}
+
+TableViewer{
+    overflow: auto auto;
+}
+#table{
+    overflow: auto auto;
+    height:100%;
+    width:100%;
+    column-span:9;
+}
+
+#table-selector-label{
+    color: white;
+    background: rgb(58, 150, 255);
+    visibility:visible;
+}
+#table-selector-container{
+    column-span:1;
+}
