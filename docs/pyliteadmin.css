@@ -11,11 +11,17 @@ TableSelector{
 TableViewer{
     overflow: auto auto;
 }
+
+TableSearch{
+    column-span:1;
+}
+
 #table{
     overflow: auto auto;
     height:100%;
     width:100%;
     column-span:9;
+    row-span:10;
 }
 
 #table-selector-label{
@@ -25,4 +31,26 @@ TableViewer{
 }
 #table-selector-container{
     column-span:1;
+}
+
+#search{
+    padding:1 0 0 0;
+    column-span:1;
+}
+#search-label{
+    background: rgb(58, 150, 255);
+    visibility:visible;
+}
+
+#search-column-options{
+    height:40%;
+}
+
+#search-input{
+    height:10%;
+    border:round rgb(58, 150, 255);
+}
+
+#search-button{
+    height:10%;
 }
