@@ -22,7 +22,7 @@ def get_table(table:str) -> tuple[list[tuple], list[str]]:
     rows = cursor.fetchall()
 
     # Get the column names
-    columns = [description[0] for description in cursor.description]
+    columns = get_columns(table)
 
     conn.close
     return rows, columns
@@ -31,13 +31,13 @@ def search_table(table:str, search_column:str, search_value:str) -> list[tuple]:
     """ TODO """
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
-    cursor.execute(f"SELECT * FROM {table} WHERE {search_column} = '{search_value}'", (table, search_column, search_value))
+    cursor.execute(f"SELECT * FROM {table} WHERE {search_column} LIKE '%{search_value}%'")
 
     # Get all items in this search result
     rows = cursor.fetchall()
 
     # Get the column names
-    columns = [description[0] for description in cursor.description]
+    columns = get_columns(table)
 
     conn.close
     return rows, columns

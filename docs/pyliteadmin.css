@@ -6,17 +6,23 @@ TableSelector{
     min-height: 0vh;
     max-height: 100vh;
     max-width: 10vw;
+    border: round rgb(58, 150, 255)
 }
 
 TableViewer{
     overflow: auto auto;
+    max-height: 100%;
 }
 
 TableSearch{
     column-span:1;
+    border: round rgb(58, 150, 255)
 }
 
-#table{
+DataTable{
+    overflow: hidden;
+}
+#table-container{
     overflow: auto auto;
     height:100%;
     width:100%;
@@ -28,29 +34,36 @@ TableSearch{
     color: white;
     background: rgb(58, 150, 255);
     visibility:visible;
+    text-style: bold;
 }
 #table-selector-container{
     column-span:1;
 }
 
-#search{
+#search-container{
     padding:1 0 0 0;
     column-span:1;
 }
 #search-label{
     background: rgb(58, 150, 255);
     visibility:visible;
+    text-style: bold;
 }
 
 #search-column-options{
     height:40%;
 }
 
+#search-term-label{
+    background: rgb(58, 150, 255);
+    visibility:visible;
+    text-style: bold;
+}
 #search-input{
     height:10%;
     border:round rgb(58, 150, 255);
 }
 
 #search-button{
-    height:10%;
+    max-height:10%;
 }
