@@ -4,7 +4,7 @@ PyLiteAdmin is a Python app for viewing and editing sqlite databases with an app
 
 ## Features
 - [x] Use a TUI (Terminal User Interface) to view your sqlite database
-- [ ] Search Columns (TODO)
+- [x] Search Columns (TODO)
 - [ ] Add/Delete Rows (TODO)
 - [ ] Edit Cell values (TODO)
 
@@ -18,9 +18,11 @@ $ python pyliteadmin.py <path to database>
 $ python pyliteadmin.py ./chinook.db
 ```
 
-![PyLiteAdmin v0.1](readme/v0.1.png)
+![PyLiteAdmin v0.3](readme/v0.3.png)
 
-Use the "Table Selector" on the left side of the terminal window to select which table you would like to view.
+Use the "Table Selector" on the top left side of the terminal window to select which table you would like to view.
+
+Use the "Search Column" widget on the bottom left side of the terminal window to search for a specific search term on the selected column. Returns a new table view with all matching/similar rows.
 
 ## Contributing
 
