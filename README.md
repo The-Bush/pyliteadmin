@@ -5,7 +5,8 @@ PyLiteAdmin is a simple command-line tool for browsing and editing SQLite databa
 ## Features
 - [x] Use a TUI (Terminal User Interface) to view your sqlite database
 - [x] Search Columns
-- [ ] Add/Delete Rows (TODO)
+- [x] Delete Rows
+- [ ] Add Rows (TODO)
 - [x] Edit Cell values
 
 ***
