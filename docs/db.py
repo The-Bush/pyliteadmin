@@ -60,9 +60,38 @@ def delete_row(table:str, row:tuple, columns:list) -> None:
     for i, column in enumerate(row):
         if i > 0:
             query += " AND "
-        query += f"{columns[i]} = '{column}'"
+        if column == None:
+            query += f"{columns[i]} IS NULL"
+        else:
+            query += f"{columns[i]} = '{column}'"
 
     print(f"DELETE FROM {table} WHERE {query}")
     cursor.execute(f"DELETE FROM {table} WHERE {query}")
+    conn.commit()
+    conn.close()
+
+def update_cell(table:str, row: tuple, column:str, columns: list, new_value:str):
+    """ Update the selected sell with its new value """
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    query = ""
+    
+    for i, value in enumerate(row):
+        if i > 0:
+            query += " AND "
+        if value == None:
+            query += f"{columns[i]} IS NULL"
+        else:
+            query += f"{columns[i]} = '{value}'"
+            
+    print(f"UPDATE {table} SET {column} = '{new_value}' WHERE {query}")
+
+    try:
+        cursor.execute(f"UPDATE {table} SET {column} = '{new_value}' WHERE {query}")
+    except Exception as error:
+        conn.close()
+        error_message = f"Error: {error}"
+        raise Exception(error_message)
+    
     conn.commit()
     conn.close()
