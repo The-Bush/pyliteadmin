@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from itertools import cycle
 from typing import Optional
 from textual.app import App, ComposeResult
-from textual.containers import Container, Grid
+from textual.containers import Container, Grid, Horizontal
 from textual.reactive import reactive
 from textual.message import Message, MessageTarget
 from textual.widget import Widget
@@ -77,13 +77,13 @@ class GetTable(TableDataProvider):
 class SearchTable(TableDataProvider):
     """A class that searches for a table data"""
 
-    def get_table(
-        self, table: str, search_column: str, search_value: str
-    ) -> tuple[list[tuple], list[str]]:
-        print("searching where", search_column, "=", search_value, "on", table)
+    def get_table(self, table: str, search_column: str, search_value: str) -> tuple[list[tuple], list[str]]:
+        print(
+            "searching where", search_column, "=", search_value, "on", table
+            )
         return db.search_table(
             table, search_column=search_column, search_value=search_value
-        )
+            )
 
 
 class TableViewer(Widget):
@@ -145,6 +145,55 @@ class ErrorMessageModal(ModalScreen):
         if button_id == "error-message-ok":
             self.app.pop_screen()
 
+class AddRowModal(ModalScreen):
+    """ A screen that allows the user to add a new row to the current table"""
+    def __init__(self, table_viewer: TableViewer, table: DataTable) -> None:
+        super().__init__()
+        self.table_viewer = table_viewer
+        self.table = table
+
+    def compose(self) -> ComposeResult:
+        
+        yield Container(
+            Container(id="add-row-inputs-container"),
+            Horizontal(
+                Button(f"Add Row", variant="primary", id="add-row-button"),
+                Button(f"Cancel", id="add-row-cancel"),
+            id="add-row-buttons-container",),
+            id="add-row-grid",
+        )
+
+    def on_mount(self,) -> None:
+        # Add the input widgets to the container
+        container = self.query_one("#add-row-inputs-container")
+        for column in self.table_viewer.columns:
+            container.mount(Label(column))
+            container.mount(Input(id=f"add-row-{column}"))
+            print(f"adding{column}")
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        button_id = event.button.id
+        if button_id == "add-row-button":
+            # Get the values of each input
+            inputs = self.query(Input)
+            values = [input.value for input in inputs]
+
+            #Add the row to the table
+            try:
+                db.add_row(self.table_viewer.table, values)
+            except Exception as error:
+                self.app.push_screen(ErrorMessageModal(error))
+                return
+
+            # Update the table viewer
+            # TODO: Identify why this is not working to add the row to tableviewer.
+            temp_key = self.table.add_row(*values)
+            keys[temp_key] = values
+            self.dismiss()
+            
+        elif button_id == "add-row-cancel":
+            self.app.pop_screen()
+    
 class ConfirmEditCell(ModalScreen):
     """A widget that allows the user to update a cell's contents"""
     def __init__(self, table_viewer:TableViewer, row_key: int, column_key, value) -> None:
@@ -152,7 +201,6 @@ class ConfirmEditCell(ModalScreen):
         self.table_viewer = table_viewer
         self.row_key = row_key
         self.column_key = column_key
-        #TODO: Get this value correct, as it can't work without it.
         self.column = column_keys[column_key]
         self.value = value
 
@@ -194,23 +242,13 @@ class ConfirmEditCell(ModalScreen):
         self.value = event.input.value
 
 class ConfirmDeleteRow(ModalScreen):
-    """A widget that allows the user to confirm an action"""
+    """A widget that allows the user to confirm deleting a row"""
 
     def __init__(self, table_viewer:TableViewer, row_key: int, columns: list[str]) -> None:
         super().__init__()
         self.table_viewer = table_viewer
         self.row_key = row_key
         self.columns = columns
-
-    def on_button_pressed(self, event: Button.Pressed) -> None:
-        button_id = event.button.id
-        if button_id == "confirm-action-button":
-            db.delete_row(self.table_viewer.table, keys[self.row_key], self.table_viewer.columns)
-            self.table_viewer.query_one(DataTable).remove_row(self.row_key)
-            self.app.pop_screen()
-        elif button_id == "confirm-action-cancel":
-            self.confirmed = False
-            self.app.pop_screen()
 
     def compose(self) -> ComposeResult:
         yield Grid(
@@ -222,6 +260,21 @@ class ConfirmDeleteRow(ModalScreen):
             Button(f"Cancel", id="confirm-action-cancel"),
             id="confirm-action-grid",
         )
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        button_id = event.button.id
+        if button_id == "confirm-action-button":
+            try:
+                db.delete_row(self.table_viewer.table, keys[self.row_key], self.table_viewer.columns)
+                self.table_viewer.query_one(DataTable).remove_row(self.row_key)
+                self.app.pop_screen()
+
+            except Exception as error:
+                self.app.pop_screen()
+                self.app.push_screen(ErrorMessageModal(error))
+                return
+        elif button_id == "confirm-action-cancel":
+            self.app.pop_screen()
 
 
 class TableSearch(Widget):
@@ -275,6 +328,7 @@ class PyLiteAdmin(App):
         ("c", "change_cursor", "Change cursor"),
         ("d", "delete_row", "Delete row"),
         ("e", "edit_cell", "Edit cell"),
+        ("a", "add_row", "Add row"),
         ("ctrl+r", "refresh_table", "Refresh table"),
         ("ctrl+c", "quit", "Quit"),
     ]
@@ -381,6 +435,15 @@ class PyLiteAdmin(App):
 
             self.change_table(self.query_one(TableViewer).table, search=True)
             return
+
+    def action_add_row(self) -> None:
+        """When a row is added, add it to the database and the data table"""
+        table = self.query_one(DataTable)
+        table_viewer = self.query_one(TableViewer)
+
+        # Push the add row screen
+        # TODO:Callback is to refresh the table, but callback is not currently working. Unknown Cause
+        self.app.push_screen(AddRowModal(table_viewer, table), callback=self.action_refresh_table())
 
     def action_refresh_table(self) -> None:
         """Refresh current table to fetch new rows or go back to whole-table view"""

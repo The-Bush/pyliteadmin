@@ -52,11 +52,12 @@ def get_table_names() -> list:
     return sorted(table_names)
 
 def delete_row(table:str, row:tuple, columns:list) -> None:
-    """ TODO """
+    """ Delete the currently selected row"""
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
     query = ""
 
+    # Generate the query
     for i, column in enumerate(row):
         if i > 0:
             query += " AND "
@@ -66,7 +67,15 @@ def delete_row(table:str, row:tuple, columns:list) -> None:
             query += f"{columns[i]} = '{column}'"
 
     print(f"DELETE FROM {table} WHERE {query}")
-    cursor.execute(f"DELETE FROM {table} WHERE {query}")
+
+    try:
+        cursor.execute(f"DELETE FROM {table} WHERE {query}")
+
+    except Exception as error:
+        conn.close()
+        error_message = f"Error: {error}"
+        raise Exception(error_message)
+    
     conn.commit()
     conn.close()
 
@@ -76,6 +85,7 @@ def update_cell(table:str, row: tuple, column:str, columns: list, new_value:str)
     cursor = conn.cursor()
     query = ""
     
+    # Generate the query
     for i, value in enumerate(row):
         if i > 0:
             query += " AND "
@@ -88,6 +98,33 @@ def update_cell(table:str, row: tuple, column:str, columns: list, new_value:str)
 
     try:
         cursor.execute(f"UPDATE {table} SET {column} = '{new_value}' WHERE {query}")
+    except Exception as error:
+        conn.close()
+        error_message = f"Error: {error}"
+        raise Exception(error_message)
+    
+    conn.commit()
+    conn.close()
+
+def add_row(table:str, row:tuple) -> None:
+    """ Add a new row to the database """
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    query = ""
+
+    # Generate the query
+    for i, value in enumerate(row):
+        if i > 0:
+            query += ", "
+        if value == None:
+            query += "NULL"
+        else:
+            query += f"'{value}'"
+
+    print(f"INSERT INTO {table} VALUES ({query})")
+
+    try:
+        cursor.execute(f"INSERT INTO {table} VALUES ({query})")
     except Exception as error:
         conn.close()
         error_message = f"Error: {error}"
