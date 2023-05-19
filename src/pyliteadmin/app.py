@@ -18,6 +18,7 @@ from textual.widgets import (
     Input,
 )
 from textual.screen import ModalScreen
+from . import db
 
 # Set the table cursor to a cycle of three different cursor types
 cursors = cycle(["row", "cell"])
@@ -34,10 +35,6 @@ if len(os.sys.argv) > 1:
 else:
     print("No database path given.\nUSAGE: pyliteadmin.py <path to database>")
     exit()
-
-from . import db
-
-
 
 class TableSelector(Widget):
     """A widget that allows the selection of a table from the selected database"""
