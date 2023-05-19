@@ -1,10 +1,10 @@
 import sqlite3
 
-# Import the path to the database
-from pyliteadmin import db_path
-
 def get_columns(table:str) -> list:
     """ Returns a list of column names and types for a given table """
+    # Import the path to the database
+    from .app import db_path
+    
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
     cursor.execute(f"SELECT * FROM {table}")
@@ -14,6 +14,9 @@ def get_columns(table:str) -> list:
 
 def get_table(table:str) -> tuple[list[tuple], list[str]]:
     """ Returns a list of rows as tuples and a list of column names for a given table """
+    # Import the path to the database
+    from .app import db_path
+
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
     cursor.execute(f"SELECT * FROM {table}")
@@ -28,7 +31,10 @@ def get_table(table:str) -> tuple[list[tuple], list[str]]:
     return rows, columns
 
 def search_table(table:str, search_column:str, search_value:str) -> list[tuple]:
-    """ TODO """
+    """ Returns a list of rows as tuples for a given table and search value and search column """
+    # Import the path to the database
+    from .app import db_path
+    
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
     cursor.execute(f"SELECT * FROM {table} WHERE {search_column} LIKE '%{search_value}%'")
@@ -44,6 +50,9 @@ def search_table(table:str, search_column:str, search_value:str) -> list[tuple]:
 
 def get_table_names() -> list:
     """ Returns a list of table names from the current database """
+    # Import the path to the database
+    from .app import db_path
+
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
     cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
@@ -53,6 +62,9 @@ def get_table_names() -> list:
 
 def delete_row(table:str, row:tuple, columns:list) -> None:
     """ Delete the currently selected row"""
+    # Import the path to the database
+    from .app import db_path
+
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
     query = ""
@@ -81,6 +93,9 @@ def delete_row(table:str, row:tuple, columns:list) -> None:
 
 def update_cell(table:str, row: tuple, column:str, columns: list, new_value:str):
     """ Update the selected sell with its new value """
+    # Import the path to the database
+    from .app import db_path
+
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
     query = ""
@@ -108,6 +123,9 @@ def update_cell(table:str, row: tuple, column:str, columns: list, new_value:str)
 
 def add_row(table:str, row:tuple) -> None:
     """ Add a new row to the database """
+    # Import the path to the database
+    from .app import db_path
+
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
     query = ""
