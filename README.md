@@ -8,6 +8,7 @@ PyLiteAdmin is a simple command-line tool for browsing and editing SQLite databa
 - [x] Delete Rows
 - [x] Add Rows
 - [x] Edit Cell values
+- [ ] Executable as "pyliteadmin /path/to/database.db"
 
 ***
 
