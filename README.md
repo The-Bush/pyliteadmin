@@ -11,16 +11,17 @@ PyLiteAdmin is a simple command-line tool for browsing and editing SQLite databa
 
 ***
 
+## Installation
+Install via PyPi
+```bash
+pip install pyliteadmin
+```
 ## Usage
 
 ```bash
-python pyliteadmin.py /path/to/database.db
+pyliteadmin /path/to/database.db
 ```
 
-Using the included database:
-```bash
-python pyliteadmin.py ./chinook.db
-```
 This will start the PyLiteAdmin interface, which consists of three main components:
 
 - Table Selector: allows you to select a table from the database.
