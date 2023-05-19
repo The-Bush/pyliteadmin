@@ -4,8 +4,6 @@ from itertools import cycle
 from typing import Optional
 from textual.app import App, ComposeResult
 from textual.containers import Container, Grid, Horizontal
-from textual.reactive import reactive
-from textual.message import Message, MessageTarget
 from textual.widget import Widget
 from textual.widgets import (
     Button,
@@ -19,9 +17,8 @@ from textual.widgets import (
     OptionList,
     Input,
 )
-from textual.screen import Screen, ModalScreen
-import sqlite3
-import db
+from textual.screen import ModalScreen
+from . import db
 
 # Set the table cursor to a cycle of three different cursor types
 cursors = cycle(["row", "cell"])
@@ -37,11 +34,7 @@ if len(os.sys.argv) > 1:
     db_path = os.sys.argv[1]
 else:
     print("No database path given.\nUSAGE: pyliteadmin.py <path to database>")
-
-    # Commented out for testing purposes
-    # exit()
-db_path = ".\chinook.db"
-
+    exit()
 
 class TableSelector(Widget):
     """A widget that allows the selection of a table from the selected database"""
@@ -455,7 +448,11 @@ class PyLiteAdmin(App):
     def action_quit(self) -> None:
         self.exit()
 
+def main():
+    app = PyLiteAdmin()
+    print("starting...")
+    app.run()
 
-app = PyLiteAdmin()
 if __name__ == "__main__":
+    app = PyLiteAdmin()
     app.run()
