@@ -3,7 +3,7 @@ import sqlite3
 def get_columns(table:str) -> list:
     """ Returns a list of column names and types for a given table """
     # Import the path to the database
-    from .app import db_path
+    from pyliteadmin.app import db_path
     
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
@@ -15,7 +15,7 @@ def get_columns(table:str) -> list:
 def get_table(table:str) -> tuple[list[tuple], list[str]]:
     """ Returns a list of rows as tuples and a list of column names for a given table """
     # Import the path to the database
-    from .app import db_path
+    from pyliteadmin.app import db_path
 
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
@@ -30,10 +30,28 @@ def get_table(table:str) -> tuple[list[tuple], list[str]]:
     conn.close
     return rows, columns
 
+def get_table_page(table:str, offset:int, limit:int) -> tuple[list[tuple], list[str]]:
+    """ Returns a list of rows as tuples and a list of column names for a given table """
+    # Import the path to the database
+    from pyliteadmin.app import db_path
+
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    cursor.execute(f"SELECT * FROM {table} LIMIT {limit} OFFSET {offset}")
+
+    # Get all items in this table
+    rows = cursor.fetchall()
+
+    # Get the column names
+    columns = get_columns(table)
+
+    conn.close
+    return rows, columns
+
 def search_table(table:str, search_column:str, search_value:str) -> list[tuple]:
     """ Returns a list of rows as tuples for a given table and search value and search column """
     # Import the path to the database
-    from .app import db_path
+    from pyliteadmin.app import db_path
     
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
@@ -51,7 +69,7 @@ def search_table(table:str, search_column:str, search_value:str) -> list[tuple]:
 def get_table_names() -> list:
     """ Returns a list of table names from the current database """
     # Import the path to the database
-    from .app import db_path
+    from pyliteadmin.app import db_path
 
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
@@ -63,7 +81,7 @@ def get_table_names() -> list:
 def delete_row(table:str, row:tuple, columns:list) -> None:
     """ Delete the currently selected row"""
     # Import the path to the database
-    from .app import db_path
+    from pyliteadmin.app import db_path
 
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
@@ -94,7 +112,7 @@ def delete_row(table:str, row:tuple, columns:list) -> None:
 def update_cell(table:str, row: tuple, column:str, columns: list, new_value:str):
     """ Update the selected sell with its new value """
     # Import the path to the database
-    from .app import db_path
+    from pyliteadmin.app import db_path
 
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
@@ -124,7 +142,7 @@ def update_cell(table:str, row: tuple, column:str, columns: list, new_value:str)
 def add_row(table:str, row:tuple) -> None:
     """ Add a new row to the database """
     # Import the path to the database
-    from .app import db_path
+    from pyliteadmin.app import db_path
 
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
@@ -150,3 +168,15 @@ def add_row(table:str, row:tuple) -> None:
     
     conn.commit()
     conn.close()
+
+def get_row_count(table:str) -> int:
+    """ Returns the number of rows in a table """
+    # Import the path to the database
+    from pyliteadmin.app import db_path
+
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    cursor.execute(f"SELECT COUNT(*) FROM {table}")
+    row_count = cursor.fetchone()[0]
+    conn.close()
+    return row_count
