@@ -11,7 +11,7 @@ version = "0.1.0"
 authors = [
   { name="Brandon Demelo", email="brandon@brandondemelo.com" },
 ]
-description = "A TUI for viewing and CRUDing sqlite databases."
+description = "A TUI for CRUDing sqlite databases."
 readme = "README.md"
 requires-python = ">=3.7"
 classifiers = [

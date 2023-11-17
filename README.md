@@ -1,4 +1,4 @@
-# PyLiteAdmin
+# [PyLiteAdmin](https://pypi.org/project/pyliteadmin/)
 
 PyLiteAdmin is a simple command-line tool for browsing and editing SQLite databases, written in Python. It provides a user interface for viewing tables, searching for data, and performing basic CRUD (Create, Read, Update, Delete) operations. All inside of the terminal thanks to the [Textual](https://pypi.org/project/textual/) framework.
 ***
