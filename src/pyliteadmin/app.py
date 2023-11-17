@@ -18,8 +18,8 @@ from textual.widgets import (
     Input,
 )
 from textual.screen import ModalScreen
-from . import db
-
+#from . import db
+import db
 # Set the table cursor to a cycle of three different cursor types
 cursors = cycle(["row", "cell"])
 
@@ -63,8 +63,8 @@ class TableDataProvider(ABC):
 class GetTable(TableDataProvider):
     """A class that fetches all the table data"""
 
-    def get_table(self, table: str) -> tuple[list[tuple], list[str]]:
-        return db.get_table(table)
+    def get_table(self, table: str, toffset:int, limit:int) -> tuple[list[tuple], list[str]]:
+        return db.get_table_page(table, toffset, limit)
 
 
 class SearchTable(TableDataProvider):
@@ -82,10 +82,13 @@ class SearchTable(TableDataProvider):
 class TableViewer(Widget):
     """A widget that displays the contents of a selected table"""
 
-    def __init__(self, table: str, search_column: Optional[str] = None, search_value: Optional[str] = None, data_provider: TableDataProvider = GetTable(),) -> None:
+    def __init__(self, table: str, toffset: int = 0, limit: int = 50, search_column: Optional[str] = None, search_value: Optional[str] = None, data_provider: TableDataProvider = GetTable(),) -> None:
         super().__init__()
         self.table = table
         self.data_provider = data_provider
+
+        self.toffset = toffset
+        self.limit = limit        
 
         if search_column is not None:
             self.search_column = search_column
@@ -94,7 +97,7 @@ class TableViewer(Widget):
                 f"{table}", search_column, search_value
             )
         else:
-            self.rows, self.columns = data_provider.get_table(f"{table}")
+            self.rows, self.columns = data_provider.get_table(f"{table}", self.toffset, self.limit)
 
     def compose(self) -> ComposeResult:
         yield DataTable(id="table")
@@ -103,7 +106,6 @@ class TableViewer(Widget):
         rows, columns = self.rows, self.columns
         data_table = self.query_one(DataTable)
         
-        #data_table.add_columns(*columns)
         column_keys.clear()
         for i, column in enumerate(columns):
             temp_key = data_table.add_column(column, key = i)
@@ -118,6 +120,35 @@ class TableViewer(Widget):
 
         # Set the table display to zebra stripes, and set default cursor type
         data_table.zebra_stripes = True
+
+    def refresh_table(self) -> None:
+        self.rows, self.columns = self.data_provider.get_table(
+            f"{self.table}", self.toffset, self.limit
+        )
+        self.query_one(DataTable).remove()
+
+         # Create a new DataTable
+        new_table = DataTable(id="table")
+
+        # Mount the new DataTable
+        self.mount(new_table)
+        self.on_mount()
+
+    def next_page(self) -> None:
+        row_count = db.get_row_count(self.table)
+        if self.toffset + self.limit > row_count:
+            self.toffset = row_count - self.limit
+        else:
+            self.toffset += self.limit
+        self.refresh_table()
+
+    def last_page(self) -> None:
+        if self.toffset - self.limit < 0:
+            self.toffset = 0
+        else:
+            self.toffset -= self.limit
+        self.refresh_table()
+        
 
 class ErrorMessageModal(ModalScreen):
     """A widget that displays an error message"""
@@ -318,6 +349,8 @@ class PyLiteAdmin(App):
     CSS_PATH = "pyliteadmin.css"
     BINDINGS = [
         ("`", "toggle_dark", "Toggle dark mode"),
+        ("j", "last_page", "Last page"),
+        ("k", "next_page", "Next page"),
         ("c", "change_cursor", "Change cursor"),
         ("d", "delete_row", "Delete row"),
         ("e", "edit_cell", "Edit cell"),
@@ -413,6 +446,14 @@ class PyLiteAdmin(App):
             row_key=row_key, 
             column_key=column_key, 
             value=value))
+
+    def action_next_page(self) -> None:
+        """Go to next page"""
+        self.query_one(TableViewer).next_page()
+
+    def action_last_page(self) -> None:
+        """Go to last page"""
+        self.query_one(TableViewer).last_page()
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         """When the search button is pressed, change table to a new table with the search results"""
