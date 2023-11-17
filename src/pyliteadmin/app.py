@@ -18,8 +18,8 @@ from textual.widgets import (
     Input,
 )
 from textual.screen import ModalScreen
-#from . import db
-import db
+from . import db
+
 # Set the table cursor to a cycle of three different cursor types
 cursors = cycle(["row", "cell"])
 
